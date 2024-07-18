@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "default": "notifyy-mobile",
+    "production": "notifyy-app",
+    "staging": "notifyy-mobile"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

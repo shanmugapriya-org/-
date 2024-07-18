@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/@angular/service-worker/config/schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/common-es2015.*.js",
+          "/main-es2015.*.js",
+          "/polyfills-es2015.*.js",
+          "/runtime-es2015.*.js",
+          "/vendor-es2015.*.js"
+        ]
+      }
+    },
+    {
+      "name": "modules",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/*-es2015.*.js",
+          "!/common-es2015.*.js",
+          "!/main-es2015.*.js",
+          "!/polyfills-es2015.*.js",
+          "!/runtime-es2015.*.js",
+          "!/vendor-es2015.*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(eot|svg|cur|jpg|png|webp|gif|otf|ttf|woff|woff2|ani)"
+        ]
+      }
+    }
+  ]
+}

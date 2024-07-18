@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+You can add global styles to this file, and also import other style files
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+    div[aria-hidden="true"] {
+        display: none !important;
+      }
+}
+app-root {
+    position: relative;
+    z-index: 9999999998 !important;
+}
+.cdk-overlay-container {
+    z-index: 9999999999 !important;
+}

@@ -1,0 +1,274 @@
+<div class="overlay"></div>
+<div class="container">
+  <mat-toolbar color="primary" class="tool-bar">
+    <span>NotiFyy</span>
+  </mat-toolbar>
+
+  <div class="margin-20">
+    <div class="pos-rel" *ngIf="savedNotes?.length === 0">
+      <span>No notes found...</span>
+    </div>
+
+    <div class="margin-20" *ngIf="savedNotes.length > 0">
+      <div class="note-cards">
+        <div class="note-card" *ngFor="let savedNote of savedNotes">
+          <mat-card class="custom-card">
+            <mat-card-header>
+              <mat-card-title>{{ savedNote?.title }}</mat-card-title>
+              <div class="note-actions">
+                <button mat-button color="primary"
+                  (click)="viewNoteDialog(savedNote)" aria-label="View Note">
+                  <mat-icon>visibility</mat-icon> View
+                </button>
+                <button mat-button color="primary"
+                  (click)="exportToPDF(savedNote)" aria-label="Export to PDF">
+                  <mat-icon>download</mat-icon> Export to PDF
+                </button>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              <code class="note-time">
+                <ng-container *ngIf="!savedNote?.edited">Saved on:
+                </ng-container>
+                <ng-container *ngIf="savedNote?.edited">Edited
+                  on:</ng-container>
+                {{ savedNote?.timestamp | date : 'dd/MM - HH:mm' }}
+              </code>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noteDialogTemplate let-dialogRef="dialogRef">
+      <div class="full-screen-dialog">
+        <mat-toolbar color="primary" class="tool-bar">
+          <div class="margin-05">New Note</div>
+          <code class="code" *ngIf="!noteTitle.length && note">Unsaved*</code>
+          <mat-icon class="switch-button"
+            (click)="openNormalNoteDialog()">change_circle</mat-icon>
+          <span class="spacer"></span>
+          <button mat-icon-button mat-dialog-close aria-label="Close">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-toolbar>
+        <mat-form-field class="note-field" appearance="fill">
+          <input matInput placeholder="Title" [(ngModel)]="noteTitle" />
+        </mat-form-field>
+        <div class="custom-buttons">
+          <button mat-raised-button
+            (click)="openFontDialog()"><mat-icon>add</mat-icon> Add Custom
+            Font</button>
+          <!-- <button mat-raised-button
+            (click)="toggleDirection()"><mat-icon>swap_horiz</mat-icon>Change
+            paragraph</button> -->
+        </div>
+        <ejs-richtexteditor id='alltoolRTE' [(value)]="note"
+          [fontFamily]='fontFamily' [toolbarSettings]='tools'
+          [quickToolbarSettings]='quickTools'
+          class="flex-one"></ejs-richtexteditor>
+        <div class="separate">
+          <mat-dialog-actions class="save-cancel" align="end">
+            <button mat-raised-button (click)="cancelNote()">
+              <mat-icon>cancel</mat-icon>
+              <span>Cancel</span>
+            </button>
+            <button mat-raised-button color="primary" (click)="saveNote()">
+              <mat-icon>save</mat-icon>
+              <span>Save</span>
+            </button>
+          </mat-dialog-actions>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="actions">
+      <button mat-fab color="warn" class="margin-10" (click)="deleteAll()"
+        aria-label="Delete All Notes">
+        <mat-icon>delete_sweep</mat-icon>
+      </button>
+      <button mat-fab color="primary" class="margin-10"
+        (click)="openNoteDialog()" aria-label="Add New Note">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<ng-template #noteHTMLDialogTemplate let-dialogRef="dialogRef">
+  <mat-toolbar color="primary" class="tool-bar tool-bar2">
+    <div class="margin-05">New Note</div>
+    <code class="code" *ngIf="!noteTitle.length && note">Unsaved*</code>
+    <mat-icon class="switch-button"
+      (click)="openNote()">change_circle</mat-icon>
+    <span class="spacer"></span>
+    <button mat-icon-button mat-dialog-close aria-label="Close">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content>
+    <mat-form-field class="note-field" appearance="fill">
+      <input matInput placeholder="Title" [(ngModel)]="noteTitle" />
+    </mat-form-field>
+    <mat-form-field id="note" class="note-field" appearance="fill">
+      <textarea
+        matInput
+        placeholder="Type your note here"
+        [(ngModel)]="note"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions class="save-cancel save-cancel2" align="end">
+    <button mat-raised-button (click)="cancelNote()">
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+    <button mat-raised-button color="primary" (click)="saveNote()">
+      <mat-icon>save</mat-icon>
+      <span>Save</span>
+    </button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #viewNoteDialogTemplate let-dialogRef="dialogRef">
+  <div class="close">
+    <h2 mat-dialog-title>{{ selectedNote?.title }}</h2>
+    <button mat-button (click)="dialogRef.close()"
+      aria-label="Close Dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <mat-dialog-actions class="action-buttons">
+    <button mat-button color="primary"
+      (click)="exportToPDF(selectedNote)" aria-label="Export to PDF">
+      <mat-icon>download</mat-icon> Export
+    </button>
+    <button mat-button (click)="editNote()" aria-label="Edit Note">
+      <mat-icon>edit</mat-icon> Edit note
+    </button>
+    <button mat-button color="warn" (click)="deleteNote()"
+      aria-label="Delete Note">
+      <mat-icon>delete</mat-icon> Delete note
+    </button>
+  </mat-dialog-actions>
+  <mat-dialog-content class="w-100">
+    <div
+      *ngIf="isHtmlContent(selectedNote?.content) || !isLink; else textContent"
+      class="iframe-container">
+      <div [ngClass]="selectedNote?.textDirection ? 'rtl' : 'ltr'"
+        [innerHTML]="sanitizedContent"></div>
+    </div>
+    <ng-template #textContent>
+      <p>{{ selectedNote?.content }}</p>
+    </ng-template>
+  </mat-dialog-content>
+</ng-template>
+
+<ng-template #editNoteDialogTemplate let-dialogRef="dialogRef">
+  <div class="edit-template">
+    <h2 mat-dialog-title>Edit Note</h2>
+    <mat-dialog-actions align="end">
+      <button mat-button color="primary" (click)="updateNote()">
+        <mat-icon>update</mat-icon>
+      </button>
+      <button mat-button (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-dialog-actions>
+  </div>
+  <mat-form-field class="note-field" appearance="fill">
+    <input matInput placeholder="Title" [(ngModel)]="selectedNote!.title" />
+  </mat-form-field>
+  <div class="custom-buttons">
+    <button mat-raised-button
+      (click)="openFontDialog()"><mat-icon>add</mat-icon> Add Custom
+      Font</button>
+    <button mat-raised-button
+      (click)="toggleDirection(selectedNote)"><mat-icon>swap_horiz</mat-icon>Change
+      paragraph</button>
+  </div>
+  <ejs-richtexteditor id='alltoolRTE' [(value)]="selectedNote!.content"
+    [fontFamily]='fontFamily' [toolbarSettings]='tools'
+    [quickToolbarSettings]='quickTools' class="flex-one"></ejs-richtexteditor>
+
+</ng-template>
+
+<ng-template #editNormalNoteDialogTemplate let-dialogRef="dialogRef">
+  <div class="edit-template">
+    <h2 mat-dialog-title>Edit Note</h2>
+    <mat-dialog-actions align="end">
+      <button mat-button color="primary" (click)="updateNote()">
+        <mat-icon>update</mat-icon>
+      </button>
+      <button mat-button (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-dialog-actions>
+  </div>
+  <mat-dialog-content>
+    <mat-form-field class="note-field" appearance="fill">
+      <input matInput placeholder="Title" [(ngModel)]="selectedNote!.title" />
+    </mat-form-field>
+    <mat-form-field id="note" class="note-field" appearance="fill">
+      <textarea
+        matInput
+        placeholder="Type your note here"
+        [(ngModel)]="selectedNote!.content"></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+</ng-template>
+
+<ng-template #confirmationDialogTemplate let-dialogRef="dialogRef">
+  <h2 mat-dialog-title>Confirm Action</h2>
+  <mat-dialog-content>
+    Are you sure you want to delete all notes?
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+    <button mat-button color="warn" (click)="confirmDelete()">Delete
+      All</button>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #addFontDialogTemplate let-dialogRef="dialogRef">
+  <div class="add-font-close">
+    <h2 mat-dialog-title>Add Font</h2>
+    <button mat-button (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <!-- <div mat-dialog-content>
+    <mat-form-field>
+      <input matInput placeholder="Enter Font Name" [(ngModel)]="addFont">
+    </mat-form-field>
+  </div> -->
+  <div mat-dialog-content>
+    <mat-form-field>
+      <input matInput placeholder="Search for Font Name"
+        [(ngModel)]="searchTerm" (input)="filterFonts()">
+    </mat-form-field>
+
+    <mat-list *ngIf="filteredFonts.length > 0">
+      <mat-list-item *ngFor="let font of filteredFonts"
+        (click)="selectFont(font)">
+        {{ font.family }}
+      </mat-list-item>
+    </mat-list>
+  </div>
+
+  <div mat-dialog-actions class="add-seperate save-cancel">
+    <button mat-raised-button (click)="dialogRef.close()">
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+    <button mat-raised-button color="primary" (click)="addCustomFont(addFont)">
+      <mat-icon>add_circle</mat-icon>
+      <span>Add</span>
+    </button>
+  </div>
+</ng-template>
+
+<div *ngIf="loading" class="spinner-overlay">
+  <div class="spinner"></div>
+</div>
