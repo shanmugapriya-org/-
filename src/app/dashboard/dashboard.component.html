@@ -59,9 +59,10 @@
           <button mat-raised-button
             (click)="openFontDialog()"><mat-icon>add</mat-icon> Add Custom
             Font</button>
-          <!-- <button mat-raised-button
+          <!-- Cannot use Change paragraph in create mode
+            <button mat-raised-button
             (click)="toggleDirection()"><mat-icon>swap_horiz</mat-icon>Change
-            paragraph</button> -->
+            paragraph</button> --> 
         </div>
         <ejs-richtexteditor id='alltoolRTE' [(value)]="note"
           [fontFamily]='fontFamily' [toolbarSettings]='tools'

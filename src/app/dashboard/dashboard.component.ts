@@ -451,7 +451,7 @@ export class DashboardComponent {
         this.showSnackBar(`"${savedNote.title}" downloaded successfully`);
       });
     }
-    else if (!this.isLink) {
+    else if (!this.isLink) { // We can skip this else if
       const pdf = new jsPDF('p', 'pt', 'a4');
       this.loading = true;
       const renderHtmlToPdf = (htmlContent: any, x: any, y: any) => {
@@ -514,7 +514,7 @@ export class DashboardComponent {
     }
   }
 
-  isHtmlContent(content: string | undefined): boolean {
+  isHtmlContent(content: string | undefined): boolean { //Check for html content
     if (!content) return false;
     const trimmedContent = content.trim().toLowerCase();
     if (trimmedContent.includes('<p><a ')) {
@@ -577,7 +577,8 @@ export class DashboardComponent {
     }
   }
 
-  initializeDirection(note?: any) {
+  initializeDirection(note?: any) { 
+    // By default the note will be left to right
     if (note?.textDirection) {
       const root = document.documentElement;
       root.style.setProperty('--direction', 'rtl');
@@ -642,6 +643,7 @@ export class DashboardComponent {
   }
 
   private generateUniqueId(): number {
+    // Generates unique id for each notes saved.
     return new Date().getTime();
   }
 

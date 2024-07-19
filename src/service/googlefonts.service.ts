@@ -13,7 +13,8 @@ interface Font {
 })
 export class GoogleFontsService {
 
-  private apiUrl = 'https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyB7F6FC3vPT7wJGiksdBWPg_54XctfcDn0';
+  googleAPIKey: string = 'AIzaSyB7F6FC3vPT7wJGiksdBWPg_54XctfcDn0' // Generate and replace your google fonts api key
+  private apiUrl = `https://www.googleapis.com/webfonts/v1/webfonts?key=${this.googleAPIKey}`;
 
   constructor(private http: HttpClient) { }
 
